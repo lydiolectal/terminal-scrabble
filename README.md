@@ -4,11 +4,13 @@ This is a no-frills text-based scrabble game that can be played on the terminal!
 
 ## How to start playing
 
-Download scrabble.py, classes.py, and scrabble_dictionary into a directory of your choice. Make sure you have Python 3 installed. To begin playing, simply use your computer's terminal to navigate to the corresponding folder and type:
+Download scrabble.py, classes.py, and scrabble_dictionary into a directory of your choice. Make sure you have Python 3.5.1 or above installed. (It's possible that earlier versions work as well, but anything below 3.0 will not run properly.) To begin playing, simply use your computer's terminal to navigate to the corresponding folder and type:
 
 ```
 python scrabble.py
 ```
+
+If you have multiple versions of python installed, you may need to replace 'python' with 'python3'.
 
 ## Scrabble rules
 
