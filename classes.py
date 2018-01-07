@@ -49,13 +49,6 @@ class Player:
             self.tiles.append(tile)
         self.toRemove = []
 
-    # checks that self.tiles contains all the letters within word
-    # (i.e., that the letters in word are a subset of the tile inventory)
-    # false if no, true if yes
-    # def contains_word(self, word):
-    #     word = word.upper()
-    #     return set(list(word)) <= set(self.tiles)
-
     def contains_tile(self, tile):
         return (tile.upper() in self.tiles)
 
@@ -146,31 +139,6 @@ class Board:
     def place_tile(self, x, y, tile):
         self.tempState[y][x] = tile
 
-        # # if it's the first turn, check that word passes through middle *.
-        # if turn == 0:
-        #     if isHorizontal:
-        #         for i in range(wordLength):
-        #             if self.tempState[y][x + i] == "*":
-        #                 properIntersection = True
-        #             self.tempState[y][x + i] = word[i]
-        #     else:
-        #         for j in range(wordLength):
-        #             if self.tempState[y + j][x] == "*":
-        #                 properIntersection = True
-        #             self.tempState[y + j][x] = word[j]
-        #
-        # # otherwise, check that the word they played intersects w/ other tiles.
-        # else:
-        #     if isHorizontal:
-        #         for i in range(wordLength):
-        #             self.tempState[y][x + i] = word[i]
-        #
-        #     else:
-        #         for j in range(wordLength):
-        #             self.tempState[y + j][x] = word[j]
-        #
-        # return properIntersection
-
     # given x,y coordinates, returns whether the place marked by the coordinates
     # is adjacent to any preexisting tiles (and therefore "intersects" with a
     # previous play).
@@ -178,18 +146,14 @@ class Board:
         # this step ensures that, if this is the first play, we check that the
         # tiles pass through the middle (8h) rather than through another word.
         if isFirstPlay:
-            print("FIRST PLAY ?!?")
             if x == 7 and y == 7:
                 return True
         else:
-            print("WE ARE NOT ON THE FIRST PLAY ANYMORE.")
-            print("X: " + str(x) + " Y: " + str(y))
             # check left, right, top, bottom -- respectively. return True if any are occupied.
             if ((x != 0 and self.state[y][x-1].isalpha()) or
             (x != 14 and self.state[y][x+1].isalpha()) or
             (y != 0 and self.state[y-1][x].isalpha()) or
             (y != 14 and self.state[y+1][x].isalpha())):
-                print("hooray...?")
                 return True
         # return False if we've gone through all four and found no occupied spaces.
         return False
@@ -198,7 +162,6 @@ class Board:
     def is_occupied(self, x, y):
         return self.state[y][x].isalpha()
 
-    # TODO: test and call this in main game.
     # scores the current play and returns the number of points earned that play.
     def score_play(self):
         totalScore = 0
@@ -250,23 +213,6 @@ class Board:
                 return (x, y + 1)
             else:
                 return self.next_coordinate(x, y + 1, isHorizontal)
-
-    # given the length of a word, its orientation, and coordinates,
-    # - returns the segment of the points matrix that applies to the area
-    # covered by the word. Used to calculate the points incurred during
-    # a given play
-    # def get_points(self, x, y, isHorizontal, word):
-    #     wordLength = len(word)
-    #
-    #     miniMatrix = []
-    #     if isHorizontal:
-    #         for i in range(wordLength):
-    #             miniMatrix.append(self.pointMatrix[y][x + i])
-    #
-    #     else:
-    #         for j in range(wordLength):
-    #             miniMatrix.append(self.pointMatrix[y + j][x])
-    #     return miniMatrix
 
 # keeps track of tile bag, and allows players to draw and exchange tiles
 class Bag:

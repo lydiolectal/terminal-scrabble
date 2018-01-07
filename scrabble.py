@@ -4,15 +4,14 @@
 
 # Fun possible additions:
 # Make it possible for user to add in new terms to the Dictionary
-# 'AI' player, possibly with varying levels of skill
 # The blank tile freebie in regular Scrabble
-# An undo option
+# 'AI' player, possibly with varying levels of skill
+# An undo option (i.e., replaying a word during someone's turn)
 
-# OVERALL TODO:
-# 1. improve look / alignment so text and board are all flush.
-# 2. build in the ability to skip or undo a decision (i.e., realizing that you actually don't want to play this turn.)
-
-# add try/except for user input blocks to simplify (use 'except ValueError')
+# Possible changes:
+# Put board, bag, and maybe dictionary classes into one single 'state' class?
+# Reduce number of players to official scrabble default of 2 players only
+# Make the board checking and score functions less bulky.
 
 from classes import Board
 from classes import Dictionary
@@ -94,7 +93,7 @@ def new_turn(gameBoard, gameDict, gameBag, gamePlayers, turn, curPlayer, isFirst
     print(curPlayer.get_name() + ", it's your turn.")
     quitGame = input("\nTo quit, enter 'q'. To continue, enter any other key: ")
     if (quitGame == "q"):
-        end_game()
+        end_game(gamePlayers)
 
     print(smallDiv)
     gameBoard.display_board()
@@ -125,7 +124,6 @@ def new_turn(gameBoard, gameDict, gameBag, gamePlayers, turn, curPlayer, isFirst
         print(smallDiv)
         make_play(turn, curPlayer, gameBoard, gameDict, gameBag, isFirstPlay)
         # we are no longer on the first play
-        # TODO: fix this. this change in value doesn't seem to affect is_intersection
         isFirstPlay = False
         print(smallDiv)
         gameBoard.display_board()
@@ -148,21 +146,11 @@ def new_turn(gameBoard, gameDict, gameBag, gamePlayers, turn, curPlayer, isFirst
     print(smallDiv)
     quitGame = input("To quit, enter 'q'. To continue, enter any other key: ")
     if (quitGame == "q"):
-        end_game()
+        end_game(gamePlayers)
     return isFirstPlay
 
 # returns the points that the play has incurred
 def make_play(turn, curPlayer, gameBoard, gameDict, gameBag, isFirstPlay):
-
-    # # get word to be inputed from player
-    # while True:
-    #     word = input("Word you wish to play: ").upper()
-    #     if word.isalpha() and gameDict.look_up(word):
-    #         break
-    #     elif not(word.isalpha()):
-    #         print("Improper input. Word must contain only alphabetic characters.")
-    #     else:
-    #         print("The word " + word + " is not recognized by the dictionary.")
 
     # get coordinates of first letter of word from player and confirm that the
     # slot indicated is not already occupied by a tile.
@@ -233,7 +221,6 @@ def make_play(turn, curPlayer, gameBoard, gameDict, gameBag, isFirstPlay):
         # 2. calculate the next space, depending on coordinate and H or V (if we're at the edge, tell them that and then stop.) <-- DONE.
         gameBoard.place_tile(x, y, tile)
         curPlayer.remove_tile(tile)
-        print ("IS FIRST PLAY: " + str(isFirstPlay))
         if gameBoard.is_intersection(x, y, isFirstPlay):
             isIntersection = True
         nextCoor = gameBoard.next_coordinate(x, y, isHorizontal)
@@ -267,10 +254,7 @@ def make_play(turn, curPlayer, gameBoard, gameDict, gameBag, isFirstPlay):
                     print("Please enter 'y' to play more tiles and 'n' to stop.")
 
     # DO IT AGAIN IF WORDS ON BOARD ARE ILLEGAL or INTERSECT IS FALSE.
-    # TODO:
-    # 1. tile replen still needs to be done. <== done.
-    # 2. board reset fix (in case play is improper) <== done.
-    # 3. MAYBE ASK PLAYER TO CONFIRM PLAY AS WELL? rn we just automatically confirm it if it's legal.
+    # MAYBE ASK PLAYER TO CONFIRM PLAY AS WELL? rn we just automatically confirm it if it's legal.
     legalBoard = check_board(gameBoard, gameDict)
     if not(legalBoard):
         print("The word you played results in a board with illegal words. Please try again.")
@@ -286,7 +270,7 @@ def make_play(turn, curPlayer, gameBoard, gameDict, gameBag, isFirstPlay):
         score = gameBoard.score_play()
         curPlayer.increment_score(score)
         if not(gameBag.has_tiles()) and (curPlayer.num_tiles() == 0):
-            end_game()
+            end_game(gamePlayers)
         else:
             tilesReplaced = 0
             toReplace = 7 - curPlayer.num_tiles()
@@ -343,22 +327,6 @@ def check_board(gameBoard, gameDict):
     # without finding illegal words.
     return True
 
-# given the section of the points matrix applicable to the word
-# and the word itself, calculates the points incurred by a play.
-# def calc_points(gameBag, miniMatrix, word):
-#     newPoints = 0
-#     factor = 1
-#     for i in range(len(word)):
-#         curMatrix = miniMatrix[i]
-#         if (curMatrix % 10) == 0:
-#             curPoint = gameBag.get_value(word[i])
-#             newPoints += curPoint
-#             factor *= curMatrix/10
-#         else:
-#             curPoint = curMatrix * gameBag.get_value(word[i])
-#             newPoints += curPoint
-#     return newPoints * factor
-
 # coordinates an exchange of 1-7 tiles between the player's inventory and the tile bag
 def do_exchange(curPlayer, gameBag):
     while True:
@@ -396,12 +364,18 @@ def do_exchange(curPlayer, gameBag):
     for tile in tilesExchanged:
         gameBag.add_tile(tile)
 
-def end_game():
-    #TODO:  display stats
-    print(smallDiv + "\nGood effort to all. End of game!")
+def end_game(gamePlayers):
+    # display closing stats
+    winner = max(gamePlayers, key=lambda p: p.get_score())
+    print(smallDiv)
+    print("Congratulations, " + winner.get_name() + "!")
+    print("You won the game with " + str(winner.get_score()) + " points.")
+    print("FINAL SCORES: ")
+    for player in gamePlayers:
+        print("    " + player.get_name() + " - " + str(player.get_score()))
+    print("Good effort to all. End of game!")
     print(bigDiv)
     exit()
 
 if __name__ == "__main__":
-
     play_scrabble()
