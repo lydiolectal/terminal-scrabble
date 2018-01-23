@@ -6,12 +6,13 @@
 # Make it possible for user to add in new terms to the Dictionary
 # The blank tile freebie in regular Scrabble
 # 'AI' player, possibly with varying levels of skill
+# Simpler precursor to the AI player: a 'help/hint' function that tells you
+# what words you can make with the tiles you have.
 # An undo option (i.e., replaying a word during someone's turn)
 
 # Possible changes:
 # Put board, bag, and maybe dictionary classes into one single 'state' class?
 # Reduce number of players to official scrabble default of 2 players only
-# Make the board checking and score functions less bulky.
 
 from classes import Board
 from classes import Dictionary
@@ -129,7 +130,6 @@ def new_turn(gameBoard, gameDict, gameBag, gamePlayers, turn, curPlayer, isFirst
         gameBoard.display_board()
         print("\n")
         curPlayer.display_tiles()
-        # print("Your score is now " + str(curPlayer.get_score()))
     elif (turnAction == "s"):
         print("You have chosen to skip this turn.")
     else:
